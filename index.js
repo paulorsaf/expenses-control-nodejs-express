@@ -1,5 +1,6 @@
 import express from 'express';
 import admin from 'firebase-admin';
+import { authenticateToken } from './middlewares/authenticate-jwt.js';
 
 const app = express();
 
@@ -7,24 +8,10 @@ admin.initializeApp({
   credential: admin.credential.cert("serviceAccountKey.json")
 });
 
-app.get('/transactions', async (request, response) => {
-    const jwt = request.headers.authorization;
-    if (!jwt) {
-        response.status(401).json({message: "Usuário nao autorizado"});
-        return;
-    }
-
-    let decodedIdToken = "";
-    try {
-        decodedIdToken = await admin.auth().verifyIdToken(jwt, true);
-    } catch (e) {
-        response.status(401).json({message: "Usuário nao autorizado"});
-        return;
-    }
-
+app.get('/transactions', authenticateToken, (request, response) => {
     admin.firestore()
         .collection('transactions')
-        .where('user.uid', '==', decodedIdToken.sub)
+        .where('user.uid', '==', request.user.uid)
         .orderBy('date', 'desc')
         .get()
         .then(snapshot => {
