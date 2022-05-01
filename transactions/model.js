@@ -1,4 +1,4 @@
-import admin from 'firebase-admin';
+import { TransactionRepository } from "./repository.js";
 
 export class Transaction {
 
@@ -9,6 +9,12 @@ export class Transaction {
     type;
     user;
 
+    #repository;
+
+    constructor() {
+        this.#repository = new TransactionRepository();
+    }
+
     findByUser() {
         if (!this.user?.uid) {
             return Promise.reject({
@@ -17,17 +23,7 @@ export class Transaction {
             });
         }
 
-        return admin.firestore()
-            .collection('transactions')
-            .where('user.uid', '==', this.user.uid)
-            .orderBy('date', 'desc')
-            .get()
-            .then(snapshot => {
-                return snapshot.docs.map(doc => ({
-                    ...doc.data(),
-                    uid: doc.id
-                }))
-            })
+        return this.#repository.findByUserUid(this.user.uid);
     }
 
 }
