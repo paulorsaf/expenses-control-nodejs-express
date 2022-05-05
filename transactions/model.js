@@ -1,3 +1,4 @@
+import { UserNotInformedError } from "./errors/user-not-informed.error.js";
 import { TransactionRepository } from "./repository.js";
 
 export class Transaction {
@@ -11,16 +12,13 @@ export class Transaction {
 
     #repository;
 
-    constructor() {
-        this.#repository = new TransactionRepository();
+    constructor(transactionRepository) {
+        this.#repository = transactionRepository || new TransactionRepository();
     }
 
     findByUser() {
         if (!this.user?.uid) {
-            return Promise.reject({
-                code: 500,
-                message: "Usuário nao informado"
-            });
+            return Promise.reject(new UserNotInformedError());
         }
 
         return this.#repository.findByUserUid(this.user.uid);
