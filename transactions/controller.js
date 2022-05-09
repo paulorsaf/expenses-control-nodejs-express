@@ -2,11 +2,16 @@ import { Transaction } from './model.js';
 
 export class TransactionController {
 
-    findByUser(request, response) {
-        const transaction = new Transaction();
-        transaction.user = request.user;
+    #transaction;
 
-        transaction.findByUser().then(transactions => {
+    constructor(transaction) {
+        this.#transaction = transaction || new Transaction();
+    }
+
+    findByUser(request, response) {
+        this.#transaction.user = request.user;
+
+        return this.#transaction.findByUser().then(transactions => {
             response.json(transactions);
         }).catch(error => {
             response.status(error.code).json(error);
