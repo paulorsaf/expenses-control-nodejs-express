@@ -2,44 +2,55 @@ import { authenticateToken } from '../authenticate-jwt.js';
 
 describe("Authenticate jwt", () => {
 
-    test('given no authorization header, then return error 401', () => {
-        const request = {
-            headers: {}
-        };
-        const response = new ResponseMock();
-        const next = () => {};
+    let response;
+    let next;
 
+    const request = {headers: {authorization: ""}};
+
+    beforeEach(() => {
+        response = new ResponseMock();
+        next = () => {};
+    })
+
+    test('given no authorization header, then return error 401', () => {
         authenticateToken(request, response, next);
 
         expect(response._status).toEqual(401);
     })
 
-    test('given authorization header, when invalid, then return error 401', async () => {
-        const request = {
-            headers: {authorization: "invalid"}
-        };
-        const response = new ResponseMock();
-        const next = () => {};
+    describe('given authorization header', () => {
 
-        await authenticateToken(request, response, next, {
-            verifyIdToken: () => Promise.reject()
-        });
+        let auth;
 
-        expect(response._status).toEqual(401);
-    })
+        beforeEach(() => {
+            auth = new AuthMock();
+        })
 
-    test('given authorization header, when valid, then add user to request', async () => {
-        const request = {
-            headers: {authorization: "valid"}
-        };
-        const response = new ResponseMock();
-        const next = () => {};
+        test('when invalid, then return error 401', async () => {
+            request.headers.authorization = "anyInvalidHeader";
+            auth._response = Promise.reject();
+    
+            await authenticateToken(request, response, next, auth);
+    
+            expect(response._status).toEqual(401);
+        })
+    
+        test('when valid, then add user to request', async () => {
+            request.headers.authorization = "anyValidHeader";
+            auth._response = Promise.resolve({sub: "anyUserUid"});
+    
+            await authenticateToken(request, response, next, auth);
+    
+            expect(request.user).toEqual({uid: "anyUserUid"});
+        })
 
-        await authenticateToken(request, response, next, {
-            verifyIdToken: () => ({sub: "anyUserUid"})
-        });
+        class AuthMock {
+            _response;
+            verifyIdToken() {
+                return this._response;
+            }
+        }
 
-        expect(request.user).toEqual({uid: "anyUserUid"});
     })
 
     class ResponseMock {
