@@ -40,62 +40,62 @@ describe("Transaction model", () => {
             await expect(response).resolves.toEqual(transactions);
         })
 
-        describe('given find transaction by uid', () => {
+    })
 
-            test('then return transaction', async () => {
-                const model = new Transaction({
-                    findByUid: () => Promise.resolve(createTransaction())
-                });
-                model.uid = 1;
+    describe('given find transaction by uid', () => {
 
-                await model.findByUid();
+        test('then return transaction', async () => {
+            const model = new Transaction({
+                findByUid: () => Promise.resolve(createTransaction())
+            });
+            model.uid = 1;
 
-                expect(model).toEqual(createTransaction());
-            })
+            await model.findByUid();
 
-            test('when uid not present, then return error 500', async () => {
-                const model = new Transaction();
-
-                await expect(model.findByUid()).rejects
-                    .toBeInstanceOf(TransactionUidNotInformedError);
-            })
-
-            test('when transaction not found, then return error 404', async () => {
-                const model = new Transaction({
-                    findByUid: () => Promise.resolve(null)
-                });
-                model.uid = 9;
-
-                await expect(model.findByUid()).rejects
-                    .toBeInstanceOf(TransactionNotFoundError);
-            })
-
-            function createTransaction() {
-                const transaction = new Transaction();
-                transaction.uid = 1;
-                transaction.date = "anyDate";
-                transaction.description = "anyDescription";
-                transaction.money = {
-                    currency: "anyCurrency",
-                    value: 10
-                };
-                transaction.transactionType = "Supermercado";
-                transaction.type = "income";
-                transaction.user = {
-                    uid: "anyUserUid"
-                }
-                return transaction;
-            }
-
+            expect(model).toEqual(createTransaction());
         })
 
-        class TransactionRepositoryMock {
-            _response;
-            findByUserUid() {
-                return this._response
+        test('when uid not present, then return error 500', async () => {
+            const model = new Transaction();
+
+            await expect(model.findByUid()).rejects
+                .toBeInstanceOf(TransactionUidNotInformedError);
+        })
+
+        test('when transaction not found, then return error 404', async () => {
+            const model = new Transaction({
+                findByUid: () => Promise.resolve(null)
+            });
+            model.uid = 9;
+
+            await expect(model.findByUid()).rejects
+                .toBeInstanceOf(TransactionNotFoundError);
+        })
+
+        function createTransaction() {
+            const transaction = new Transaction();
+            transaction.uid = 1;
+            transaction.date = "anyDate";
+            transaction.description = "anyDescription";
+            transaction.money = {
+                currency: "anyCurrency",
+                value: 10
+            };
+            transaction.transactionType = "Supermercado";
+            transaction.type = "income";
+            transaction.user = {
+                uid: "anyUserUid"
             }
+            return transaction;
         }
 
     })
+
+    class TransactionRepositoryMock {
+        _response;
+        findByUserUid() {
+            return this._response
+        }
+    }
 
 })
