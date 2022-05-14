@@ -23,6 +23,16 @@ describe('Transaction controller', () => {
             controller = new TransactionController(transaction);
         })
 
+        test('when succes, then return 200', (done) => {
+            transaction._response = Promise.resolve(transactions);
+    
+            controller.findByUser(request, response).then(() => {
+                expect(response._status).toEqual(200);
+                done();
+            })
+            
+        })
+
         test('when succes, then return transactions', (done) => {
             transaction._response = Promise.resolve(transactions);
     
@@ -44,7 +54,7 @@ describe('Transaction controller', () => {
                 })
             })
         
-            test('then return error status 500', (done) => {
+            test('then return error status', (done) => {
                 transaction._response = Promise.reject(error);
         
                 controller.findByUser(request, response).then(() => {
