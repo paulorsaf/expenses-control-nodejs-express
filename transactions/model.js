@@ -10,6 +10,7 @@ export class Transaction {
     money;
     transactionType;
     type;
+    uid;
     user;
 
     #repository;
