@@ -1,5 +1,6 @@
 import { TransactionNotFoundError } from '../errors/transaction-not-found.error.js';
 import { TransactionUidNotInformedError } from '../errors/transaction-uid-not-informed.error.js';
+import { UserDoesntOwnTransactionError } from '../errors/user-doesnt-own-transaction.error.js';
 import { UserNotInformedError } from '../errors/user-not-informed.error.js';
 import { Transaction } from '../model.js';
 
@@ -49,10 +50,24 @@ describe("Transaction model", () => {
                 findByUid: () => Promise.resolve(createTransaction())
             });
             model.uid = 1;
+            model.user = {uid: "anyUserUid"};
 
             await model.findByUid();
 
             expect(model).toEqual(createTransaction());
+        })
+
+        test('when user doesnt own transaction, then return 403 error', async () => {
+            const transactionDb = createTransaction();
+            transactionDb.user = {uid: "anyOtherUserUid"};
+
+            const model = new Transaction({
+                findByUid: () => Promise.resolve(transactionDb)
+            });
+            model.uid = 9;
+            model.user = {uid: "anyUserUid"};
+
+            await expect(model.findByUid()).rejects.toBeInstanceOf(UserDoesntOwnTransactionError);
         })
 
         test('when uid not present, then return error 500', async () => {

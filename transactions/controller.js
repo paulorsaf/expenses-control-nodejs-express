@@ -20,6 +20,7 @@ export class TransactionController {
 
     findByUid(request, response) {
         this.#transaction.uid = request.params.uid;
+        this.#transaction.user = request.user;
 
         return this.#transaction.findByUid().then(() => {
             response.status(200).json(this.#transaction);

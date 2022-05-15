@@ -1,5 +1,6 @@
 import { TransactionNotFoundError } from "./errors/transaction-not-found.error.js";
 import { TransactionUidNotInformedError } from "./errors/transaction-uid-not-informed.error.js";
+import { UserDoesntOwnTransactionError } from "./errors/user-doesnt-own-transaction.error.js";
 import { UserNotInformedError } from "./errors/user-not-informed.error.js";
 import { TransactionRepository } from "./repository.js";
 
@@ -35,6 +36,9 @@ export class Transaction {
         return this.#repository.findByUid(this.uid).then(transactionDb => {
             if (!transactionDb) {
                 return Promise.reject(new TransactionNotFoundError());
+            }
+            if (this.user.uid != transactionDb.user.uid) {
+                return Promise.reject(new UserDoesntOwnTransactionError());
             }
             this.date = transactionDb.date;
             this.description = transactionDb.description;
