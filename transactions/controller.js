@@ -29,4 +29,14 @@ export class TransactionController {
         });
     }
 
+    create(request, response) {
+        this.#transaction.user = request.user;
+
+        return this.#transaction.create(request.body).then(() => {
+            response.status(200).json(this.#transaction);
+        }).catch(error => {
+            response.status(error.code).json(error);
+        })
+    }
+
 }
