@@ -87,24 +87,68 @@ describe("Transaction model", () => {
                 .toBeInstanceOf(TransactionNotFoundError);
         })
 
-        function createTransaction() {
-            const transaction = new Transaction();
-            transaction.uid = 1;
-            transaction.date = "anyDate";
-            transaction.description = "anyDescription";
-            transaction.money = {
+    })
+
+    describe('given create new transaction', () => {
+
+        const params = {
+            date: "anyDate",
+            description: "anyDescription",
+            money: {
                 currency: "anyCurrency",
                 value: 10
-            };
-            transaction.transactionType = "Supermercado";
-            transaction.type = "income";
-            transaction.user = {
+            },
+            transactionType: "Supermercado",
+            type: "income",
+            user: {
                 uid: "anyUserUid"
             }
-            return transaction;
         }
 
+        const repositoryMock = {
+            _hasSaved: false,
+            save() {
+                this._hasSaved = true;
+                return Promise.resolve({uid: 1});
+            }
+        }          
+
+        test('then return new transaction', async () => {
+            const model = new Transaction(repositoryMock);
+
+            await model.create(params);
+
+            const newTransaction = createTransaction();
+
+            expect(model).toEqual(newTransaction);
+        })
+
+        test('then save transaction', async () => {
+            const model = new Transaction(repositoryMock);
+
+            await model.create(params);
+
+            expect(repositoryMock._hasSaved).toBeTruthy();
+        })
+
     })
+
+    function createTransaction() {
+        const transaction = new Transaction();
+        transaction.uid = 1;
+        transaction.date = "anyDate";
+        transaction.description = "anyDescription";
+        transaction.money = {
+            currency: "anyCurrency",
+            value: 10
+        };
+        transaction.transactionType = "Supermercado";
+        transaction.type = "income";
+        transaction.user = {
+            uid: "anyUserUid"
+        }
+        return transaction;
+    }
 
     class TransactionRepositoryMock {
         _response;
