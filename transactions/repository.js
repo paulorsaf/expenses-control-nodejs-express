@@ -24,4 +24,11 @@ export class TransactionRepository {
             .then(snapshot => snapshot.data());
     }
 
+    save(transaction) {
+        return admin.firestore()
+            .collection('transactions')
+            .add(JSON.parse(JSON.stringify(transaction)))
+            .then(response => ({uid: response.id}));
+    }
+
 }
