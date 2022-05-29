@@ -131,6 +131,72 @@ describe("Transaction model", () => {
 
     })
 
+    describe('given update transaction', () => {
+        
+        let repositoryMock;
+
+        beforeEach(() => {
+            repositoryMock = {
+                _hasUpdated: false,
+                findByUid() {
+                    return Promise.resolve({user: {uid: "anyUserUid"}});
+                },
+                update() {
+                    this._hasUpdated = true;
+                    return Promise.resolve();
+                }
+            }
+        })
+
+        test('then return updated transaction', async () => {
+            const model = new Transaction(repositoryMock);
+            model.uid = 1;
+            model.user = {uid: "anyUserUid"};
+
+            const params = createTransaction();
+            await model.update(params);
+
+            const updatedTransaction = createTransaction();
+            expect(model).toEqual(updatedTransaction);
+        })
+
+        test('then update transaction', async () => {
+            const model = new Transaction(repositoryMock);
+            model.uid = 1;
+            model.user = {uid: "anyUserUid"};
+
+            const params = createTransaction();
+            await model.update(params);
+
+            expect(repositoryMock._hasUpdated).toBeTruthy();
+        })
+
+        test('when transaction doesnt belong to user, then return error', async () => {
+            const model = new Transaction({
+                findByUid: () => Promise.resolve({user: {uid: "anyOtherUserUid"}})
+            });
+            model.uid = 1;
+            model.user = {uid: "anyUserUid"};
+
+            const params = createTransaction();
+            await expect(model.update(params))
+                .rejects.toBeInstanceOf(UserDoesntOwnTransactionError);
+        })
+
+        test('when transaction doesnt exist, then return not found error', async () => {
+            const model = new Transaction({
+                findByUid: () => Promise.resolve(null)
+            });
+            model.uid = 1;
+            model.user = {uid: "anyUserUid"};
+
+            const params = createTransaction();
+            await expect(model.update(params))
+                .rejects.toBeInstanceOf(TransactionNotFoundError);
+        })
+
+    })
+
     function createTransaction() {
         const transaction = new Transaction();
         transaction.uid = 1;
