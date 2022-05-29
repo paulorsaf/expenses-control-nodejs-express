@@ -21,132 +21,176 @@ describe('Create transaction validator', () => {
         response = new ResponseMock();
     })
 
-    test('given date not informed, then return 400 error', () => {
-        request.body.date = null;
+    describe('given date', () => {
 
-        validateCreateTransaction(request, response);
+        describe('when not informed', () => {
 
-        expect(response._status).toEqual(400);
+            beforeEach(() => {
+                request.body.date = null;
+            })
+
+            test('then return 400 error', () => {
+                validateCreateTransaction(request, response);
+        
+                expect(response._status).toEqual(400);
+            })
+        
+            test('then return error', () => {
+                validateCreateTransaction(request, response);
+        
+                expect(response._json).toBeInstanceOf(BadRequestError);
+            })
+
+        })
+
+        describe('when invalid', () => {
+
+            beforeEach(() => {
+                request.body.date = "invalidDate";
+            })
+
+            test('then return 400 error', () => {
+                validateCreateTransaction(request, response);
+        
+                expect(response._status).toEqual(400);
+            })
+        
+            test('then return error', () => {
+                validateCreateTransaction(request, response);
+        
+                expect(response._json).toBeInstanceOf(BadRequestError);
+            })
+
+        })
+
     })
 
-    test('given date not informed, then return error', () => {
-        request.body.date = null;
+    describe('given money', () => {
 
-        validateCreateTransaction(request, response);
+        describe('when not informed', () => {
 
-        expect(response._json).toBeInstanceOf(BadRequestError);
+            beforeEach(() => {
+                request.body.money = null;
+            })
+
+            test('then return 400 error', () => {
+                validateCreateTransaction(request, response);
+        
+                expect(response._status).toEqual(400);
+            })
+        
+            test('then return error', () => {
+                validateCreateTransaction(request, response);
+        
+                expect(response._json).toBeInstanceOf(BadRequestError);
+            })
+
+        })
+
+        describe('when currency not informed', () => {
+
+            beforeEach(() => {
+                request.body.money.currency = null;
+            })
+
+            test('then return 400 error', () => {
+                validateCreateTransaction(request, response);
+        
+                expect(response._status).toEqual(400);
+            })
+        
+            test('then return error', () => {
+                validateCreateTransaction(request, response);
+        
+                expect(response._json).toBeInstanceOf(BadRequestError);
+            })
+
+        })
+
+        describe('when value not informed', () => {
+
+            beforeEach(() => {
+                request.body.money.value = 0;
+            })
+
+            test('then return 400 error', () => {
+                validateCreateTransaction(request, response);
+        
+                expect(response._status).toEqual(400);
+            })
+        
+            test('then return error', () => {
+                validateCreateTransaction(request, response);
+        
+                expect(response._json).toBeInstanceOf(BadRequestError);
+            })
+
+        })
+
     })
 
-    test('given date invalid, then return 400 error', () => {
-        request.body.date = "invalidDate";
+    describe('given transaction type not informed', () => {
 
-        validateCreateTransaction(request, response);
+        beforeEach(() => {
+            request.body.transactionType = null;
+        })
 
-        expect(response._status).toEqual(400);
+        test('then return 400 error', () => {
+            validateCreateTransaction(request, response);
+    
+            expect(response._status).toEqual(400);
+        })
+    
+        test('then return error', () => {
+            validateCreateTransaction(request, response);
+    
+            expect(response._json).toBeInstanceOf(BadRequestError);
+        })
+
     })
 
-    test('given date invalid, then return error', () => {
-        request.body.date = "invalidDate";
+    describe('given type', () => {
 
-        validateCreateTransaction(request, response);
+        describe('when not informed', () => {
 
-        expect(response._json).toBeInstanceOf(BadRequestError);
-    })
+            beforeEach(() => {
+                request.body.type = null;
+            })
 
-    test('given money not informed, then return 400 error', () => {
-        request.body.money = null;
+            test('then return 400 error', () => {
+                validateCreateTransaction(request, response);
+        
+                expect(response._status).toEqual(400);
+            })
+        
+            test('then return error', () => {
+                validateCreateTransaction(request, response);
+        
+                expect(response._json).toBeInstanceOf(BadRequestError);
+            })
 
-        validateCreateTransaction(request, response);
+        })
 
-        expect(response._status).toEqual(400);
-    })
+        describe('when is not income or expense', () => {
 
-    test('given money not informed, then return error', () => {
-        request.body.money = null;
+            beforeEach(() => {
+                request.body.type = "anyOtherType";
+            })
 
-        validateCreateTransaction(request, response);
+            test('then return 400 error', () => {
+                validateCreateTransaction(request, response);
+        
+                expect(response._status).toEqual(400);
+            })
+        
+            test('then return error', () => {
+                validateCreateTransaction(request, response);
+        
+                expect(response._json).toBeInstanceOf(BadRequestError);
+            })
 
-        expect(response._json).toBeInstanceOf(BadRequestError);
-    })
+        })
 
-    test('given currency not informed, then return 400 error', () => {
-        request.body.money.currency = null;
-
-        validateCreateTransaction(request, response);
-
-        expect(response._status).toEqual(400);
-    })
-
-    test('given currency not informed, then return error', () => {
-        request.body.money.currency = null;
-
-        validateCreateTransaction(request, response);
-
-        expect(response._json).toBeInstanceOf(BadRequestError);
-    })
-
-    test('given value not informed, then return 400 error', () => {
-        request.body.money.value = 0;
-
-        validateCreateTransaction(request, response);
-
-        expect(response._status).toEqual(400);
-    })
-
-    test('given value not informed, then return error', () => {
-        request.body.money.value = 0;
-
-        validateCreateTransaction(request, response);
-
-        expect(response._json).toBeInstanceOf(BadRequestError);
-    })
-
-    test('given transaction type not informed, then return 400 error', () => {
-        request.body.transactionType = null;
-
-        validateCreateTransaction(request, response);
-
-        expect(response._status).toEqual(400);
-    })
-
-    test('given transaction type not informed, then return error', () => {
-        request.body.transactionType = null;
-
-        validateCreateTransaction(request, response);
-
-        expect(response._json).toBeInstanceOf(BadRequestError);
-    })
-
-    test('given type not informed, then return 400 error', () => {
-        request.body.type = null;
-
-        validateCreateTransaction(request, response);
-
-        expect(response._status).toEqual(400);
-    })
-
-    test('given type not informed, then return error', () => {
-        request.body.type = null;
-
-        validateCreateTransaction(request, response);
-
-        expect(response._json).toBeInstanceOf(BadRequestError);
-    })
-
-    test('given type is not income or expense, then return 400 error', () => {
-        request.body.type = "anyOtherType";
-
-        validateCreateTransaction(request, response);
-
-        expect(response._status).toEqual(400);
-    })
-
-    test('given type is not income or expense, then return error', () => {
-        request.body.type = "anyOtherType";
-
-        validateCreateTransaction(request, response);
-
-        expect(response._json).toBeInstanceOf(BadRequestError);
     })
 
     test('given transaction is valid, then go to next step', () => {

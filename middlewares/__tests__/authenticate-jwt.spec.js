@@ -1,3 +1,4 @@
+import { UserNotAuthorizedError } from '../errors/user-not-authorized.error.js';
 import { authenticateToken } from '../authenticate-jwt.js';
 
 describe("Authenticate jwt", () => {
@@ -12,10 +13,20 @@ describe("Authenticate jwt", () => {
         next = () => {};
     })
 
-    test('given no authorization header, then return error 401', () => {
-        authenticateToken(request, response, next);
+    describe('given no authorization header', () => {
 
-        expect(response._status).toEqual(401);
+        test('then return error 401', () => {
+            authenticateToken(request, response, next);
+    
+            expect(response._status).toEqual(401);
+        })
+    
+        test('then return error', () => {
+            authenticateToken(request, response, next);
+    
+            expect(response._json).toBeInstanceOf(UserNotAuthorizedError);
+        })
+
     })
 
     describe('given authorization header', () => {
@@ -26,13 +37,25 @@ describe("Authenticate jwt", () => {
             auth = new AuthMock();
         })
 
-        test('when invalid, then return error 401', async () => {
-            request.headers.authorization = "anyInvalidHeader";
-            auth._response = Promise.reject();
-    
-            await authenticateToken(request, response, next, auth);
-    
-            expect(response._status).toEqual(401);
+        describe('when invalid', () => {
+
+            beforeEach(() => {
+                request.headers.authorization = "anyInvalidHeader";
+                auth._response = Promise.reject();
+            })
+
+            test('then return error 401', async () => {
+                await authenticateToken(request, response, next, auth);
+        
+                expect(response._status).toEqual(401);
+            })
+
+            test('then return error', async () => {
+                await authenticateToken(request, response, next, auth);
+        
+                expect(response._json).toBeInstanceOf(UserNotAuthorizedError);
+            })
+
         })
     
         test('when valid, then add user to request', async () => {
@@ -54,13 +77,14 @@ describe("Authenticate jwt", () => {
     })
 
     class ResponseMock {
+        _json;
         _status;
         status(value) {
             this._status = value;
             return this;
         }
         json(value) {
-
+            this._json = value;
         }
     }
 
