@@ -69,7 +69,6 @@ export class Transaction {
             this.money = params.money;
             this.transactionType = params.transactionType;
             this.type = params.type;
-            this.user = params.user;
     
             return this.#repository.update(this);
         })
