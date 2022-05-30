@@ -39,4 +39,15 @@ export class TransactionController {
         })
     }
 
+    update(request, response) {
+        this.#transaction.uid = request.params.uid;
+        this.#transaction.user = request.user;
+
+        return this.#transaction.update(request.body).then(() => {
+            response.status(200).json(this.#transaction);
+        }).catch(error => {
+            response.status(error.code).json(error);
+        });
+    }
+
 }
