@@ -6,24 +6,22 @@ import { validateTransaction } from './validators/transaction.validator.js';
 
 const app = express();
 
-const transactionController = new TransactionController();
-
 app.get('/',
     (request, response, next) => authenticateToken(request, response, next, admin.auth()),
-    (request, response) => transactionController.findByUser(request, response)
+    (request, response) => new TransactionController().findByUser(request, response)
 );
 app.get('/:uid',
     (request, response, next) => authenticateToken(request, response, next, admin.auth()),
-    (request, response) => transactionController.findByUid(request, response)
+    (request, response) => new TransactionController().findByUid(request, response)
 );
 app.post('/',
     (request, response, next) => validateTransaction(request, response, next),
     (request, response, next) => authenticateToken(request, response, next, admin.auth()),
-    (request, response) => transactionController.create(request, response)
+    (request, response) => new TransactionController().create(request, response)
 );
 app.patch('/:uid',
     (request, response, next) => validateTransaction(request, response, next),
     (request, response, next) => authenticateToken(request, response, next, admin.auth()),
-    (request, response) => transactionController.update(request, response))
+    (request, response) => new TransactionController().update(request, response))
 
 export const transactionsRouter = app;
