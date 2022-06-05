@@ -300,6 +300,79 @@ describe('Transaction controller', () => {
 
     })
 
+    describe('given remove transaction', () => {
+
+        let request;
+        let response;
+
+        const model = {
+            _hasDeleted: false,
+            delete() {
+                this._hasDeleted = true;
+                return Promise.resolve();
+            }
+        }
+        const user = {uid: "anyUserUid"};
+
+        beforeEach(() => {
+            request = {params: {uid: 1}, user};
+            response = new ResponseMock();
+        })
+
+        test('when succes, then return status 200', async () => {
+            const controller = new TransactionController(model);
+
+            await controller.delete(request, response);
+
+            expect(response._status).toEqual(200);
+        })
+
+        test('then remove transaction', async () => {
+            const controller = new TransactionController(model);
+
+            await controller.delete(request, response);
+
+            expect(model._hasDeleted).toBeTruthy();
+        })
+
+        test('then transaction should belong to user from request', async () => {
+            const controller = new TransactionController(model);
+
+            await controller.delete(request, response);
+
+            expect(model.user).toEqual(user);
+        })
+
+        test('then transaction should have uid from request', async () => {
+            const controller = new TransactionController(model);
+
+            await controller.delete(request, response);
+
+            expect(model.uid).toEqual(1);
+        })
+
+        test('when error, then return error status', async () => {
+            const controller = new TransactionController({
+                delete: () => Promise.reject({code: 500})
+            });
+
+            await controller.delete(request, response);
+
+            expect(response._status).toEqual(500);
+        })
+
+        test('when error, then return error', async () => {
+            const controller = new TransactionController({
+                delete: () => Promise.reject({code: 500})
+            });
+
+            await controller.delete(request, response);
+
+            expect(response._json).toEqual({code: 500});
+        })
+
+    })
+
     class ResponseMock {
         _json;
         _status;

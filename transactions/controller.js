@@ -50,4 +50,15 @@ export class TransactionController {
         });
     }
 
+    delete(request, response) {
+        this.#transaction.uid = request.params.uid;
+        this.#transaction.user = request.user;
+
+        return this.#transaction.delete().then(() => {
+            response.status(200);
+        }).catch(error => {
+            response.status(error.code).json(error);
+        })
+    }
+
 }
