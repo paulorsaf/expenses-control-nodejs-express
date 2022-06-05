@@ -319,6 +319,12 @@ describe('Transaction controller', () => {
             expect(response._status).toEqual(200);
         })
 
+        test('when success, then return deleted transaction', async () => {
+            await controller.delete(request, response);
+
+            expect(response._json).toEqual(model);
+        })
+
         describe('when error', () => {
 
             beforeEach(async () => {
