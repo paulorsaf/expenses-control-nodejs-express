@@ -313,16 +313,20 @@ describe('Transaction controller', () => {
             expect(model.uid).toEqual(1);
         })
 
-        test('when success, then return status 200', async () => {
-            await controller.delete(request, response);
+        describe('when success', () => {
 
-            expect(response._status).toEqual(200);
-        })
+            test('then return status 200', async () => {
+                await controller.delete(request, response);
+    
+                expect(response._status).toEqual(200);
+            })
+    
+            test('then return deleted transaction', async () => {
+                await controller.delete(request, response);
+    
+                expect(response._json).toEqual(model);
+            })
 
-        test('when success, then return deleted transaction', async () => {
-            await controller.delete(request, response);
-
-            expect(response._json).toEqual(model);
         })
 
         describe('when error', () => {
