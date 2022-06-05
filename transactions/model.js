@@ -63,7 +63,7 @@ export class Transaction {
     }
 
     update(params) {
-        return this.findByUid(this.uid).then(() => {
+        return this.findByUid().then(() => {
             this.date = params.date;
             this.description = params.description;
             this.money = params.money;
