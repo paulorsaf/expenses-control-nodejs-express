@@ -1,5 +1,5 @@
 import { BadRequestError } from "../../errors/bad-request.error.js";
-import { validateCreateTransaction } from "../create-transaction.validator.js"
+import { validateTransaction } from "../transaction.validator.js"
 
 describe('Create transaction validator', () => {
 
@@ -30,13 +30,13 @@ describe('Create transaction validator', () => {
             })
 
             test('then return 400 error', () => {
-                validateCreateTransaction(request, response);
+                validateTransaction(request, response);
         
                 expect(response._status).toEqual(400);
             })
         
             test('then return error', () => {
-                validateCreateTransaction(request, response);
+                validateTransaction(request, response);
         
                 expect(response._json).toBeInstanceOf(BadRequestError);
             })
@@ -50,13 +50,13 @@ describe('Create transaction validator', () => {
             })
 
             test('then return 400 error', () => {
-                validateCreateTransaction(request, response);
+                validateTransaction(request, response);
         
                 expect(response._status).toEqual(400);
             })
         
             test('then return error', () => {
-                validateCreateTransaction(request, response);
+                validateTransaction(request, response);
         
                 expect(response._json).toBeInstanceOf(BadRequestError);
             })
@@ -74,13 +74,13 @@ describe('Create transaction validator', () => {
             })
 
             test('then return 400 error', () => {
-                validateCreateTransaction(request, response);
+                validateTransaction(request, response);
         
                 expect(response._status).toEqual(400);
             })
         
             test('then return error', () => {
-                validateCreateTransaction(request, response);
+                validateTransaction(request, response);
         
                 expect(response._json).toBeInstanceOf(BadRequestError);
             })
@@ -94,13 +94,13 @@ describe('Create transaction validator', () => {
             })
 
             test('then return 400 error', () => {
-                validateCreateTransaction(request, response);
+                validateTransaction(request, response);
         
                 expect(response._status).toEqual(400);
             })
         
             test('then return error', () => {
-                validateCreateTransaction(request, response);
+                validateTransaction(request, response);
         
                 expect(response._json).toBeInstanceOf(BadRequestError);
             })
@@ -114,13 +114,13 @@ describe('Create transaction validator', () => {
             })
 
             test('then return 400 error', () => {
-                validateCreateTransaction(request, response);
+                validateTransaction(request, response);
         
                 expect(response._status).toEqual(400);
             })
         
             test('then return error', () => {
-                validateCreateTransaction(request, response);
+                validateTransaction(request, response);
         
                 expect(response._json).toBeInstanceOf(BadRequestError);
             })
@@ -136,13 +136,13 @@ describe('Create transaction validator', () => {
         })
 
         test('then return 400 error', () => {
-            validateCreateTransaction(request, response);
+            validateTransaction(request, response);
     
             expect(response._status).toEqual(400);
         })
     
         test('then return error', () => {
-            validateCreateTransaction(request, response);
+            validateTransaction(request, response);
     
             expect(response._json).toBeInstanceOf(BadRequestError);
         })
@@ -158,13 +158,13 @@ describe('Create transaction validator', () => {
             })
 
             test('then return 400 error', () => {
-                validateCreateTransaction(request, response);
+                validateTransaction(request, response);
         
                 expect(response._status).toEqual(400);
             })
         
             test('then return error', () => {
-                validateCreateTransaction(request, response);
+                validateTransaction(request, response);
         
                 expect(response._json).toBeInstanceOf(BadRequestError);
             })
@@ -178,13 +178,13 @@ describe('Create transaction validator', () => {
             })
 
             test('then return 400 error', () => {
-                validateCreateTransaction(request, response);
+                validateTransaction(request, response);
         
                 expect(response._status).toEqual(400);
             })
         
             test('then return error', () => {
-                validateCreateTransaction(request, response);
+                validateTransaction(request, response);
         
                 expect(response._json).toBeInstanceOf(BadRequestError);
             })
@@ -197,7 +197,7 @@ describe('Create transaction validator', () => {
         let hasCalledNext = false;
         const next = () => {hasCalledNext = true;}
 
-        validateCreateTransaction(request, response, next);
+        validateTransaction(request, response, next);
 
         expect(hasCalledNext).toBeTruthy();
     })

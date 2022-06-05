@@ -1,6 +1,6 @@
 import { BadRequestError } from "../errors/bad-request.error.js";
 
-export function validateCreateTransaction(request, response, next) {
+export function validateTransaction(request, response, next) {
     const date = request.body.date;
     if (!date) {
         return response.status(400).json(new BadRequestError("Data nao informada"));
