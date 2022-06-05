@@ -4,6 +4,10 @@ describe('Transaction controller', () => {
 
     let request;
     let response;
+    let controller;
+
+    const user = {uid: "anyUserUid"};
+    const error = {code: 500};
 
     beforeEach(() => {
         request = {};
@@ -11,8 +15,6 @@ describe('Transaction controller', () => {
     })
 
     describe('given find transaction by user', () => {
-
-        let controller;
 
         describe('when success', () => {
 
@@ -44,8 +46,6 @@ describe('Transaction controller', () => {
 
         describe('when fail', () => {
 
-            const error = {code: 500};
-
             beforeEach(() => {
                 controller = new TransactionController({
                     findByUser: () => Promise.reject(error)
@@ -61,7 +61,7 @@ describe('Transaction controller', () => {
         
             test('then return error status', (done) => {
                 controller.findByUser(request, response).then(() => {
-                    expect(response._status).toEqual(500);
+                    expect(response._status).toEqual(error.code);
                     done();
                 })
             })
@@ -72,19 +72,14 @@ describe('Transaction controller', () => {
 
     describe('given find transaction by uid', () => {
 
-        let controller;
-
         describe('when success', () => {
-
-            const user = {uid: "anyUserUid"};
-            const request = {params: {uid: 1}, user};
-            let response;
 
             const transaction = {
                 findByUid: () => Promise.resolve()
             };
 
             beforeEach(() => {
+                request = {params: {uid: 1}, user};
                 response = new ResponseMock();
                 controller = new TransactionController(transaction);
             })
@@ -117,29 +112,25 @@ describe('Transaction controller', () => {
 
         describe('when fail', () => {
 
-            const request = {params: {uid: 1}};
-            let response;
-
-            let controller;
-
             beforeEach(() => {
+                request = {params: {uid: 1}}
                 response = new ResponseMock();
 
                 controller = new TransactionController({
-                    findByUid: () => Promise.reject({code: 500})
+                    findByUid: () => Promise.reject(error)
                 });
             })
 
             test('then return error status', async () => {
                 await controller.findByUid(request, response);
     
-                expect(response._status).toEqual(500);
+                expect(response._status).toEqual(error.code);
             })
     
             test('then return error status', async () => {
                 await controller.findByUid(request, response);
     
-                expect(response._json).toEqual({code: 500});
+                expect(response._json).toEqual(error);
             })
 
         })
@@ -148,12 +139,8 @@ describe('Transaction controller', () => {
 
     describe('given create new transaction', () => {
 
-        const user = {uid: "anyUserUid"};
-        const request = {body: {}, user};
-        let response;
-
         beforeEach(() => {
-            response = new ResponseMock();
+            request = {body: {}, user};
         })
 
         test('then transaction should belong to user on request', async () => {
@@ -168,7 +155,6 @@ describe('Transaction controller', () => {
 
         describe('when success', () => {
 
-            let controller;
             let transaction = {
                 create: () => Promise.resolve()
             }
@@ -193,24 +179,22 @@ describe('Transaction controller', () => {
 
         describe('when fail', () => {
 
-            let controller;
-
             beforeEach(() => {
                 controller = new TransactionController({
-                    create: () => Promise.reject({code: 500})
+                    create: () => Promise.reject(error)
                 });
             })
 
             test('then return error status', async () => {
                 await controller.create(request, response);
     
-                expect(response._status).toEqual(500);
+                expect(response._status).toEqual(error.code);
             })
     
             test('then return error', async () => {
                 await controller.create(request, response);
     
-                expect(response._json).toEqual({code: 500});
+                expect(response._json).toEqual(error);
             })
 
         })
@@ -219,15 +203,10 @@ describe('Transaction controller', () => {
 
     describe('given update transaction', () => {
 
-        const user = {uid: "anyUserUid"};
-        
-        const request = {params: {uid: 1}, user};
-        let response;
-
         let model;
 
         beforeEach(() => {
-            response = new ResponseMock();
+            request = {params: {uid: 1}, user};
             model = {
                 _hasUpdated: false,
                 update() {
@@ -282,18 +261,18 @@ describe('Transaction controller', () => {
 
             beforeEach(async () => {
                 const controller = new TransactionController({
-                    update: () => Promise.reject({code: 500})
+                    update: () => Promise.reject(error)
                 });
     
                 await controller.update(request, response);
             })
 
             test('then return error status', async () => {
-                expect(response._status).toEqual(500);
+                expect(response._status).toEqual(error.code);
             })
     
             test('then return error status', async () => {
-                expect(response._json).toEqual({code: 500});
+                expect(response._json).toEqual(error);
             })
 
         })
@@ -302,9 +281,6 @@ describe('Transaction controller', () => {
 
     describe('given remove transaction', () => {
 
-        let request;
-        let response;
-
         const model = {
             _hasDeleted: false,
             delete() {
@@ -312,63 +288,55 @@ describe('Transaction controller', () => {
                 return Promise.resolve();
             }
         }
-        const user = {uid: "anyUserUid"};
-
         beforeEach(() => {
             request = {params: {uid: 1}, user};
             response = new ResponseMock();
-        })
 
-        test('when succes, then return status 200', async () => {
-            const controller = new TransactionController(model);
-
-            await controller.delete(request, response);
-
-            expect(response._status).toEqual(200);
+            controller = new TransactionController(model);
         })
 
         test('then remove transaction', async () => {
-            const controller = new TransactionController(model);
-
             await controller.delete(request, response);
 
             expect(model._hasDeleted).toBeTruthy();
         })
 
         test('then transaction should belong to user from request', async () => {
-            const controller = new TransactionController(model);
-
             await controller.delete(request, response);
 
             expect(model.user).toEqual(user);
         })
 
         test('then transaction should have uid from request', async () => {
-            const controller = new TransactionController(model);
-
             await controller.delete(request, response);
 
             expect(model.uid).toEqual(1);
         })
 
-        test('when error, then return error status', async () => {
-            const controller = new TransactionController({
-                delete: () => Promise.reject({code: 500})
-            });
-
+        test('when success, then return status 200', async () => {
             await controller.delete(request, response);
 
-            expect(response._status).toEqual(500);
+            expect(response._status).toEqual(200);
         })
 
-        test('when error, then return error', async () => {
-            const controller = new TransactionController({
-                delete: () => Promise.reject({code: 500})
-            });
+        describe('when error', () => {
 
-            await controller.delete(request, response);
+            beforeEach(async () => {
+                controller = new TransactionController({
+                    delete: () => Promise.reject(error)
+                });
 
-            expect(response._json).toEqual({code: 500});
+                await controller.delete(request, response);
+            })
+
+            test('then return error status', () => {
+                expect(response._status).toEqual(error.code);
+            })
+    
+            test('then return error', () => {
+                expect(response._json).toEqual(error);
+            })
+
         })
 
     })
