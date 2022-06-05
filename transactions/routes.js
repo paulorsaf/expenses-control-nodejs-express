@@ -22,6 +22,11 @@ app.post('/',
 app.patch('/:uid',
     (request, response, next) => validateTransaction(request, response, next),
     (request, response, next) => authenticateToken(request, response, next, admin.auth()),
-    (request, response) => new TransactionController().update(request, response))
+    (request, response) => new TransactionController().update(request, response)
+);
+app.delete('/:uid',
+    (request, response, next) => authenticateToken(request, response, next, admin.auth()),
+    (request, response) => new TransactionController().delete(request, response)
+);
 
 export const transactionsRouter = app;
